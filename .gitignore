@@ -30,8 +30,6 @@
 *.exe
 *.out
 *.app
-<<<<<<< HEAD
-=======
 *.txt
 
 # specific to CodeBlocks IDE
@@ -42,4 +40,5 @@
 # generated directories
 bin/
 obj/
->>>>>>> abac7dc6fe0929d6f8a10c8a1438f579710ac331
+
+
