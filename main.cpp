@@ -9,6 +9,24 @@ HWND hwndStart, hwndEnd, hwndAddButton, hwndList;
 std::vector<std::string> workLog;
 const char* logFileName = "worklog.txt";
 
+// Функция для вычисления отработанных часов с учетом обеденного времени
+double calculateHours(const std::string& startTime, const std::string& endTime) {
+    // Парсинг времени
+    int startHour, startMinute, endHour, endMinute;
+    sscanf(startTime.c_str(), "%d:%d", &startHour, &startMinute);
+    sscanf(endTime.c_str(), "%d:%d", &endHour, &endMinute);
+
+    // Вычисление разницы в минутах
+    double startTotalMinutes = startHour * 60 + startMinute;
+    double endTotalMinutes = endHour * 60 + endMinute;
+    double totalWorkedMinutes = endTotalMinutes - startTotalMinutes;
+
+    // Вычет обеденного времени (45 минут)
+    totalWorkedMinutes -= 45;
+
+    return totalWorkedMinutes / 60.0;
+}
+
 // Функция для добавления рабочего времени в список
 void addWorkTime() {
     // Получение времени начала и окончания работы из полей ввода
@@ -20,11 +38,7 @@ void addWorkTime() {
     std::string endTime = endBuffer;
 
     // Вычисление отработанных часов
-    int startHour, startMinute, endHour, endMinute;
-    sscanf(startTime.c_str(), "%d:%d", &startHour, &startMinute);
-    sscanf(endTime.c_str(), "%d:%d", &endHour, &endMinute);
-
-    double totalHours = (endHour * 60 + endMinute - (startHour * 60 + startMinute)) / 60.0;
+    double totalHours = calculateHours(startTime, endTime);
 
     // Добавление информации в журнал работы
     std::stringstream logEntry;
