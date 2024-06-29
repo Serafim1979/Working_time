@@ -8,6 +8,8 @@
 HWND hwndStart, hwndEnd, hwndAddButton, hwndList;
 std::vector<std::string> workLog;
 const char* logFileName = "worklog.txt";
+const double normalWorkHours = 8.0;
+const double lunchBreakMinutes = 45.0;
 
 // Функция для вычисления отработанных часов с учетом обеденного времени
 double calculateHours(const std::string& startTime, const std::string& endTime) {
@@ -22,9 +24,17 @@ double calculateHours(const std::string& startTime, const std::string& endTime) 
     double totalWorkedMinutes = endTotalMinutes - startTotalMinutes;
 
     // Вычет обеденного времени (45 минут)
-    totalWorkedMinutes -= 45;
+    totalWorkedMinutes -= lunchBreakMinutes;
 
     return totalWorkedMinutes / 60.0;
+}
+
+// Функция для вычисления сверхурочных часов
+double calculateOvertime(double totalHours) {
+    if (totalHours > normalWorkHours) {
+        return totalHours - normalWorkHours;
+    }
+    return 0.0;
 }
 
 // Функция для добавления рабочего времени в список
@@ -39,10 +49,14 @@ void addWorkTime() {
 
     // Вычисление отработанных часов
     double totalHours = calculateHours(startTime, endTime);
+    double overtimeHours = calculateOvertime(totalHours);
 
     // Добавление информации в журнал работы
     std::stringstream logEntry;
     logEntry << "Начало: " << startTime << ", Окончание: " << endTime << ", Отработано: " << totalHours << " ч.";
+    if (overtimeHours > 0) {
+        logEntry << " Сверхурочные: " << overtimeHours << " ч.";
+    }
     workLog.push_back(logEntry.str());
 
     // Обновление списка в окне
