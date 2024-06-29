@@ -30,6 +30,7 @@
 *.exe
 *.out
 *.app
+*.txt
 
 # specific to CodeBlocks IDE
 *.layout
