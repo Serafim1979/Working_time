@@ -15,6 +15,7 @@
 *  - windows.h: for working with WinAPI.
 *  - string: for working with strings.
 *  - ctime: for working with date and time.
+*  - chrono: for working with date and time.
 *  - stream: for working with string streams.
 *  - iomanip: for I/O formatting.
 *  - iostream: for standard I/O.
@@ -67,3 +68,27 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 {
     return 0;
 }
+
+// Returns the shortened day of the week for the specified date
+std::string GetDayOfWeekAbbreviation(int year, int month, int day)
+{
+    struct tm timeinfo = {};
+    timeinfo.tm_year = year - 1900;
+    timeinfo.tm_mon = month - 1;
+    timeinfo.tm_mday = day;
+    mktime(&timeinfo);
+
+    const char* days[] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
+    return days[timeinfo.tm_wday];
+}
+
+// Formats the date in a string like DD.MM.YYYY
+std::string FormatDate(int year, int month, int day)
+{
+    std::stringstream ss;
+    ss << std::setw(2) << std::setfill('0') << day << "." << std::setw(2) << std::setfill('0') << month << "." << year;
+    return ss.str();
+}
+
+// Deletes all created controls
+
