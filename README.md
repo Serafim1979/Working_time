@@ -22,10 +22,10 @@ To save the data, click the "Save" button.
 
 To download data from a file, the program will automatically download the data at startup if the file exists.
 
-##Contribution
+## Contribution
 
 If you want to contribute to the project, please create a fork of the repository, make the necessary changes and send a pull request.
 
-##License
+## License
 
 This project is distributed under the MIT license. Additional information can be found in the LICENSE file.
