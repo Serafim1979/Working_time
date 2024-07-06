@@ -91,4 +91,105 @@ std::string FormatDate(int year, int month, int day)
 }
 
 // Deletes all created controls
+void CleanupEditControls()
+{
+    for (int i = 0; i < MAX_DAYS_IN_MONTH; ++i)
+    {
+        if (g_hEditHHStart[i])
+            DestroyWindow(g_hEditHHStart[i]);
+        if (g_hEditMMStart[i])
+            DestroyWindow(g_hEditMMStart[i]);
+        if (g_hEditHHEnd[i])
+            DestroyWindow(g_hEditHHEnd[i]);
+        if (g_hEditMMEnd[i])
+            DestroyWindow(g_hEditMMEnd[i]);
+        if (g_hEditHoursWorked[i])
+            DestroyWindow(g_hEditHoursWorked[i]);
+        if (g_hEditOvertime[i])
+            DestroyWindow(g_hEditOvertime[i]);
+    }
+}
 
+// Function for determining the number of days in a month
+int GetDaysInMonth(int year, int month)
+{
+    if (month == 2)
+    {
+        if ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0))
+        {
+            return 29;
+        }
+        else
+        {
+            return 28;
+        }
+    }
+    else if (month == 4 || month == 6 || month == 9 || month == 11)
+    {
+        return 30;
+    }
+    else
+    {
+        return 31;
+    }
+}
+
+// Function for calculating the working day and processing time
+void CalculateDurationForDay(HWND hwnd, int day)
+{
+    char buffer[5];
+    int startHours = 0, startMinutes = 0, endHours = 0, endMinutes = 0;
+
+    GetWindowText(GetDlgItem(hwnd, IDC_START_HOURS(day)), buffer, 5);
+    startHours = atoi(buffer);
+
+    GetWindowText(GetDlgItem(hwnd, IDC_START_MINUTES(day)), buffer, 5);
+    startMinutes = atoi(buffer);
+
+    GetWindowText(GetDlgItem(hwnd, IDC_END_HOURS(day)), buffer, 5);
+    endHours = atoi(buffer);
+
+    GetWindowText(GetDlgItem(hwnd, IDC_END_MINUTES(day)), buffer, 5);
+    endMinutes = atoi(buffer);
+
+    if (startHours < 0 || startHours > 23 || startMinutes < 0 || startMinutes > 59 ||
+        endHours < 0 || endHours > 23 || endMinutes < 0 || endMinutes > 59)
+    {
+        SetWindowText(GetDlgItem(hwnd, IDC_RESULT(day)), "Invalid Input");
+        return;
+    }
+
+    using namespace std::chrono;
+
+    // Convert start and end times to time_point objects
+    auto startTime = hours(startHours) + minutes(startMinutes);
+    auto endTime = hours(endHours) + minutes(endMinutes);
+
+    // Calculate duration
+    auto duration = endTime - startTime;
+
+    // Handle crossing midnight
+    if (duration < minutes(0)) {
+        duration += hours(24);
+    }
+
+    // Get total hours and minutes from duration
+    auto totalHours = duration_cast<hours>(duration).count();
+    auto totalMinutes = duration_cast<minutes>(duration).count() % 60;
+
+    char result[50];
+    sprintf(result, "%lldh %lldm", totalHours, totalMinutes);
+    SetWindowText(GetDlgItem(hwnd, IDC_RESULT(day)), result);
+
+    // Calculate and display overtime
+    int overtimeMinutes = 0;
+    if (totalHours >= 8) {
+        overtimeMinutes = (totalHours - 8) * 60 + totalMinutes;
+    }
+    int overtimeHours = overtimeMinutes / 60;
+    int overtimeRemainingMinutes = overtimeMinutes % 60;
+
+    char overtimeResult[50];
+    sprintf(overtimeResult, "%dh %dm", overtimeHours, overtimeRemainingMinutes);
+    SetWindowText(GetDlgItem(hwnd, IDC_OVERTIME(day)), overtimeResult);
+}
