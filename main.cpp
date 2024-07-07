@@ -52,9 +52,11 @@ HWND g_hEditHHEnd[MAX_DAYS_IN_MONTH] = {nullptr};
 HWND g_hEditMMEnd[MAX_DAYS_IN_MONTH] = {nullptr};
 HWND g_hEditHoursWorked[MAX_DAYS_IN_MONTH] = {nullptr};
 HWND g_hEditOvertime[MAX_DAYS_IN_MONTH] = {nullptr};
+HWND g_hTotalOvertime = nullptr;
 
 // Function prototypes
 std::string GetDayOfWeekAbbreviation(int year, int month, int day);
+void UpdateTotalOverTime(HWND hwnd);
 std::string FormatDate(int year, int month, int day);
 void CleanupEditControls();
 int GetDaysInMonth(int year, int month);
@@ -80,6 +82,27 @@ std::string GetDayOfWeekAbbreviation(int year, int month, int day)
 
     const char* days[] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
     return days[timeinfo.tm_wday];
+}
+
+void UpdateTotalOverTime(HWND hwnd)
+{
+    int totalOvertimeMinutes = 0;
+    for(int day = 1; day <= MAX_DAYS_IN_MONTH; ++day)
+    {
+        char buffer[10];
+        GetWindowText(GetDlgItem(hwnd, IDC_OVERTIME(day)), buffer, 10);
+
+        int overtimeHours = 0, overtimeMinutes = 0;
+        sscanf(buffer, "%dh %dm", &overtimeHours, &overtimeMinutes);
+        totalOvertimeMinutes += overtimeHours * 60 + overtimeMinutes;
+    }
+
+    int totalOvertimeHours = totalOvertimeMinutes / 60;
+    int totalOvertimeRemainingMinutes = totalOvertimeMinutes % 60;
+
+    char totalOvertimeResult[50];
+    sprintf(totalOvertimeResult, "Total Overtime: %dh %dm", totalOvertimeHours, totalOvertimeRemainingMinutes);
+    SetWindowText(g_hTotalOvertime, totalOvertimeResult);
 }
 
 // Formats the date in a string like DD.MM.YYYY
