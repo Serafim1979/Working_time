@@ -103,6 +103,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     return 0;
 }
 
+LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+    switch(uMsg)
+    {
+    default:
+        {
+            return DefWindowProc(hwnd, uMsg, wParam, lParam);
+        }
+    }
+}
+
 // Returns the shortened day of the week for the specified date
 std::string GetDayOfWeekAbbreviation(int year, int month, int day)
 {
