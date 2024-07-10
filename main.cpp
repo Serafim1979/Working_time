@@ -206,6 +206,8 @@ void CalculateDurationForDay(HWND hwnd, int day)
     char buffer[5];
     int startHours = 0, startMinutes = 0, endHours = 0, endMinutes = 0;
 
+    int launchBreakMinutes = 45;
+
     GetWindowText(GetDlgItem(hwnd, IDC_START_HOURS(day)), buffer, 5);
     startHours = atoi(buffer);
 
@@ -218,6 +220,7 @@ void CalculateDurationForDay(HWND hwnd, int day)
     GetWindowText(GetDlgItem(hwnd, IDC_END_MINUTES(day)), buffer, 5);
     endMinutes = atoi(buffer);
 
+    // Checking the correctness of the input
     if (startHours < 0 || startHours > 23 || startMinutes < 0 || startMinutes > 59 ||
         endHours < 0 || endHours > 23 || endMinutes < 0 || endMinutes > 59)
     {
