@@ -228,37 +228,60 @@ void CalculateDurationForDay(HWND hwnd, int day)
         return;
     }
 
-    using namespace std::chrono;
 
-    // Convert start and end times to time_point objects
-    auto startTime = hours(startHours) + minutes(startMinutes);
-    auto endTime = hours(endHours) + minutes(endMinutes);
+
+    // calculate the duration for the current day
+    int totalStartMinutes = startHours * 60 + startMinutes;
+    int totalEndMinutes = endHours * 60 + endMinutes;
+    totalEndMinutes -= launchBreakMinutes;
 
     // Calculate duration
-    auto duration = endTime - startTime;
+    int durationMinutes = totalEndMinutes - totalStartMinutes;
 
     // Handle crossing midnight
-    if (duration < minutes(0)) {
-        duration += hours(24);
+    if (durationMinutes < 0) {
+        durationMinutes += 24 * 60;
     }
 
     // Get total hours and minutes from duration
-    auto totalHours = duration_cast<hours>(duration).count();
-    auto totalMinutes = duration_cast<minutes>(duration).count() % 60;
+    int totalHours = durationMinutes / 60;
+    int totalMinutes = durationMinutes % 60;
 
     char result[50];
-    sprintf(result, "%lldh %lldm", totalHours, totalMinutes);
+    sprintf(result, "%dh %dm", totalHours, totalMinutes);
     SetWindowText(GetDlgItem(hwnd, IDC_RESULT(day)), result);
 
     // Calculate and display overtime
-    int overtimeMinutes = 0;
-    if (totalHours >= 8) {
-        overtimeMinutes = (totalHours - 8) * 60 + totalMinutes;
+    SYSTEMTIME systemTime;
+    GetLocalTime(&systemTime);
+
+    int current_year = systemTime.wYear;
+    int current_month = systemTime.wMonth;
+    int current_day = systemTime.wDay;
+
+    std::string dayOfWeek = GetDayOfWeekAbbreviation(current_year, current_month, day);
+    int normalWorkMinutes = 0;
+
+    if(dayOfWeek == "Mon" || dayOfWeek == "Tue" || dayOfWeek == "Wed" || dayOfWeek == "Thu")
+    {
+        normalWorkMinutes = 8 * 60 + 15;
     }
+    else if(dayOfWeek == "Fri")
+    {
+        normalWorkMinutes = 7 * 60;
+    }
+    else
+    {
+        normalWorkMinutes = 8 * 60;
+    }
+
+    int overtimeMinutes = durationMinutes > normalWorkMinutes ? durationMinutes - normalWorkMinutes : 0;
     int overtimeHours = overtimeMinutes / 60;
     int overtimeRemainingMinutes = overtimeMinutes % 60;
 
     char overtimeResult[50];
     sprintf(overtimeResult, "%dh %dm", overtimeHours, overtimeRemainingMinutes);
     SetWindowText(GetDlgItem(hwnd, IDC_OVERTIME(day)), overtimeResult);
+
+    UpdateTotalOverTime(hwnd);
 }
