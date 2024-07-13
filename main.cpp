@@ -285,3 +285,26 @@ void CalculateDurationForDay(HWND hwnd, int day)
 
     UpdateTotalOverTime(hwnd);
 }
+
+void CreateDayControls(HWND hwnd, int day, int x, int y)
+{
+    CreateWindow("STATIC", "Start", WS_VISIBLE | WS_CHILD | SS_LEFT, x, y, 40, 20, hwnd, NULL, NULL, NULL);
+    CreateWindow("STATIC", "hh:", WS_VISIBLE | WS_CHILD | SS_LEFT, x + 50, y, 20, 20, hwnd, NULL, NULL, NULL);
+    CreateWindow("STATIC", "mm:", WS_VISIBLE | WS_CHILD | SS_LEFT, x + 120, y, 30, 20, hwnd, NULL, NULL, NULL);
+
+    g_hEditHHStart[day - 1] = CreateWindow("EDIT", "", WS_VISIBLE | WS_CHILD | WS_BORDER | ES_NUMBER, x + 75, y, 30, 20, hwnd, (HMENU)IDC_START_HOURS(day), NULL, NULL);
+    g_hEditMMStart[day - 1] = CreateWindow("EDIT", "", WS_VISIBLE | WS_CHILD | WS_BORDER | ES_NUMBER, x + 155, y, 30, 20, hwnd, (HMENU)IDC_START_MINUTES(day), NULL, NULL);
+
+    CreateWindow("STATIC", "End", WS_VISIBLE | WS_CHILD | SS_LEFT, x + 220, y, 40, 20, hwnd, NULL, NULL, NULL);
+    CreateWindow("STATIC", "hh:", WS_VISIBLE | WS_CHILD | SS_LEFT, x + 265, y, 20, 20, hwnd, NULL, NULL, NULL);
+    CreateWindow("STATIC", "mm:", WS_VISIBLE | WS_CHILD | SS_LEFT, x + 340, y, 30, 20, hwnd, NULL, NULL, NULL);
+
+    g_hEditHHEnd[day - 1] = CreateWindow("EDIT", "", WS_VISIBLE | WS_CHILD | WS_BORDER | ES_NUMBER, x + 290, y, 30, 20, hwnd, (HMENU)IDC_END_HOURS(day), NULL, NULL);
+    g_hEditMMEnd[day - 1] = CreateWindow("EDIT", "", WS_VISIBLE | WS_CHILD | WS_BORDER | ES_NUMBER, x + 375, y, 30, 20, hwnd, (HMENU)IDC_END_MINUTES(day), NULL, NULL);
+
+    CreateWindow("STATIC", "Hours Worked:", WS_VISIBLE | WS_CHILD | SS_LEFT, x + 430, y, 100, 20, hwnd, NULL, NULL, NULL);
+    g_hEditHoursWorked[day - 1] = CreateWindow("STATIC", "", WS_VISIBLE | WS_CHILD | SS_LEFT, x + 535, y, 60, 20, hwnd, (HMENU)IDC_RESULT(day), NULL, NULL);
+
+    CreateWindow("STATIC", "Overtime", WS_VISIBLE | WS_CHILD | SS_LEFT, x + 630, y, 110, 20, hwnd, NULL, NULL, NULL);
+    g_hEditHoursWorked[day - 1] = CreateWindow("STATIC", "", WS_VISIBLE | WS_CHILD | SS_LEFT, x + 750, y, 60, 20, hwnd, (HMENU)IDC_RESULT(day), NULL, NULL);
+}
