@@ -308,3 +308,49 @@ void CreateDayControls(HWND hwnd, int day, int x, int y)
     CreateWindow("STATIC", "Overtime", WS_VISIBLE | WS_CHILD | SS_LEFT, x + 630, y, 110, 20, hwnd, NULL, NULL, NULL);
     g_hEditHoursWorked[day - 1] = CreateWindow("STATIC", "", WS_VISIBLE | WS_CHILD | SS_LEFT, x + 750, y, 60, 20, hwnd, (HMENU)IDC_RESULT(day), NULL, NULL);
 }
+
+void SaveDataToFile(HWND hwnd)
+{
+    SYSTEMTIME systemTime;
+    GetLocalTime(&systemTime);
+
+    int current_year = systemTime.wYear;
+    int current_month = systemTime.wMonth;
+
+    std::ofstream file("timelog.txt");
+
+    if(file.is_open())
+    {
+        for(int day = 1; day <= MAX_DAYS_IN_MONTH; ++day)
+        {
+            char buffer[10];
+
+            GetWindowText(GetDlgItem(hwnd, IDC_START_HOURS(day)), buffer, 10);
+            int startHours = atoi(buffer);
+
+            GetWindowText(GetDlgItem(hwnd, IDC_START_MINUTES(day)), buffer, 10);
+            int startMinutes = atoi(buffer);
+
+            GetWindowText(GetDlgItem(hwnd, IDC_END_HOURS(day)), buffer, 10);
+            int endHours = atoi(buffer);
+
+            GetWindowText(GetDlgItem(hwnd, IDC_END_MINUTES(day)), buffer, 10);
+            int endMinutes = atoi(buffer);
+
+            char resultBuffer[50];
+            GetWindowText(GetDlgItem(hwnd, IDC_RESULT(day)), resultBuffer, 50);
+            std::string result = resultBuffer;
+
+            char overtimeBuffer[50];
+            GetWindowText(GetDlgItem(hwnd, IDC_OVERTIME(day)), overtimeBuffer, 50);
+            std::string overtime = overtimeBuffer;
+
+            if(startHours != 0 || startMinutes != 0 || endHours != 0 || endMinutes != 0 || !result.empty() || !overtime.empty())
+            {
+                std::string date = FormatDate(current_year, current_month, day);
+                file << date << "Start: " << std::setw(2) << std::setfill('0') << startHours << ":" << std::setw(2) << std::setfill('0') << startMinutes << ", End: " << std::setw(2) << std::setfill('0') << endHours << ":" << std::setw(2) << std::setfill('0') << endMinutes << ", Work time: " << result << ", Overtime: " << overtime << "\n";
+            }
+        }
+        file.close();
+    }
+}
