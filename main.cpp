@@ -354,3 +354,41 @@ void SaveDataToFile(HWND hwnd)
         file.close();
     }
 }
+
+void LoadDateFromFile(HWND hwnd)
+{
+    std::ifstream file("timelog.txt");
+
+    if(file.is_open())
+    {
+        std::string line;
+        while(std::getline(file, line))
+        {
+            std::istringstream iss(line);
+            std::string date, startStr, endStr, workTimeStr, overtimeStr;
+            int startHours, startMinutes, endHours, endMinutes;
+            char separator, comma;
+
+            iss >> date >> startStr >> startHours >> separator >> startMinutes >> comma >> endStr >> endHours >> separator >> endMinutes >> comma >> workTimeStr;
+
+            std::getline(iss, workTimeStr, ',');
+            std::getline(iss, overtimeStr);
+
+            workTimeStr = workTimeStr.substr(7);
+            overtimeStr = overtimeStr.substr(11);
+
+            // Find the day int the date string
+            int day = std::stoi(date.substr(0, 2));
+
+            SetWindowText(GetDlgItem(hwnd, IDC_START_HOURS(day)), std::to_string(startHours).c_str());
+            SetWindowText(GetDlgItem(hwnd, IDC_START_MINUTES(day)), std::to_string(startMinutes).c_str());
+            SetWindowText(GetDlgItem(hwnd, IDC_END_HOURS(day)), std::to_string(endHours).c_str());
+            SetWindowText(GetDlgItem(hwnd, IDC_END_MINUTES(day)), std::to_string(endMinutes).c_str());
+            SetWindowText(GetDlgItem(hwnd, IDC_RESULT(day)), workTimeStr.c_str());
+            SetWindowText(GetDlgItem(hwnd, IDC_OVERTIME(day)), overtimeStr.c_str());
+        }
+
+        UpdateTotalOverTime(hwnd);
+        file.close();
+    }
+}
