@@ -44,6 +44,8 @@
 #define IDC_SAVE_BUTTON 1070
 #define IDM_EXIT 9001
 
+#define IDC_TOTAL_OVERTIME 1080
+
 
 // Global variables for storing control descriptors
 HWND g_hEditHHStart[MAX_DAYS_IN_MONTH] = {nullptr};
@@ -107,6 +109,28 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     switch(uMsg)
     {
+    case WM_CREATE:
+        {
+            SYSTEMTIME systemTime;
+            GetLocalTime(&systemTime);
+            int current_year = systemTime.wYear;
+            int current_month = systemTime.wMonth;
+            int days_in_month = GetDaysInMonth(current_year, current_month);
+
+            for(int day = 1; day <= days_in_month; ++day)
+            {
+                int x = 160;
+                int y = 20 + (day - 1) * 20;
+                CreateDayControls(hwnd, day, x, y);
+            }
+
+            CreateWindow("BUTTON", "Save to File", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 20, 650, 100, 20, hwnd, (HMENU)IDC_SAVE_BUTTON, NULL, NULL);
+            g_hTotalOvertime = CreateWindow("STATIC", "", WS_VISIBLE | WS_CHILD |SS_LEFT, 800, 660, 160, 20, hwnd, (HMENU)IDC_TOTAL_OVERTIME, NULL, NULL);
+
+            LoadDataFromFile(hwnd);
+        }
+        break;
+
     default:
         {
             return DefWindowProc(hwnd, uMsg, wParam, lParam);
@@ -355,7 +379,7 @@ void SaveDataToFile(HWND hwnd)
     }
 }
 
-void LoadDateFromFile(HWND hwnd)
+void LoadDataFromFile(HWND hwnd)
 {
     std::ifstream file("timelog.txt");
 
