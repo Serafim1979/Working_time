@@ -146,7 +146,43 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         }
         break;
 
+    case WM_PAINT:
+        {
+            PAINTSTRUCT ps;
+            HDC hdc = BeginPaint(hwnd, &ps);
+            SYSTEMTIME systemTime;
+            GetLocalTime(&systemTime);
+            int current_year = systemTime.wYear;
+            int current_month = systemTime.wMonth;
+            int days_in_month = GetDaysInMonth(current_year, current_month);
 
+            for(int day = 1; day <= days_in_month; ++day)
+            {
+                int x = 20;
+                int y = 20 + (day - 1) * 20;
+
+                std::string dayOfWeek = GetDayOfWeekAbbreviation(current_year, current_month, day);
+                std::string dateString = FormatDate(current_year, current_month, day);
+
+                if(dayOfWeek == "Sat" || dayOfWeek == "Sun")
+                {
+                    SetTextColor(hdc, RGB(255, 0, 0));
+                }
+                else if(dayOfWeek == "Fri")
+                {
+                    SetTextColor(hdc, RGB(20, 158, 90));
+                }
+                else
+                {
+                    SetTextColor(hdc, RGB(0, 0, 0));
+                }
+
+                TextOutA(hdc, x, y, dayOfWeek.c_str(), dayOfWeek.length());
+                TextOutA(hdc, x + 35, y, dateString.c_str(), dateString.length());
+            }
+            EndPaint(hwnd, &ps);
+        }
+        break;
 
     default:
         {
