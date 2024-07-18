@@ -131,6 +131,23 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         }
         break;
 
+    case WM_COMMAND:
+        {
+            if(LOWORD(wParam) == IDC_SAVE_BUTTON)
+            {
+                SaveDataToFile(hwnd);
+            }
+            else if(HIWORD(wParam) == EN_CHANGE)
+            {
+                int id = LOWORD(wParam);
+                int day = (id - 101) / 6;
+                CalculateDurationForDay(hwnd, day);
+            }
+        }
+        break;
+
+
+
     default:
         {
             return DefWindowProc(hwnd, uMsg, wParam, lParam);
