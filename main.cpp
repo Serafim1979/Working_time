@@ -1,3 +1,27 @@
+/*********************************************************************
+* Description: A program for logging working hours and overwork.
+* The user enters the start and end time for each
+* the day of the month, the program calculates the working time
+* days and recycling.
+* Author: Ivan Korolkov
+* Date of creation: July 6, 2024
+*
+* License: MIT License
+*
+* Input data: Start and end time for each day of the month.
+* Output data: Working hours and processing.
+*
+* Libraries used:
+*  - windows.h: for working with WinAPI.
+*  - string: for working with strings.
+*  - ctime: for working with date and time.
+*  - chrono: for working with date and time.
+*  - stream: for working with string streams.
+*  - iomanip: for I/O formatting.
+*  - iostream: for standard I/O.
+*  - fstream: for working with files.
+*********************************************************************/
+
 #include <windows.h>
 #include <string>
 #include <ctime>
@@ -6,8 +30,8 @@
 #include <iostream>
 #include <fstream>
 
+// Constants and macros
 #define MAX_DAYS_IN_MONTH 31
-
 #define IDC_START_HOURS(day)(101 + (day) * 6)
 #define IDC_START_MINUTES(day)(102 + (day) * 6)
 #define IDC_END_HOURS(day)(103 + (day) * 6)
@@ -21,6 +45,7 @@
 
 #define IDM_EXIT 9001
 
+// Global variables for storing control descriptors
 HWND g_hEditHHStart[MAX_DAYS_IN_MONTH] = {nullptr};
 HWND g_hEditMMStart[MAX_DAYS_IN_MONTH] = {nullptr};
 HWND g_hEditHHEnd[MAX_DAYS_IN_MONTH] = {nullptr};
